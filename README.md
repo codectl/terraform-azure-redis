@@ -1,0 +1,206 @@
+# Redis Cache
+
+This Terraform module simplifies the setup and management of azure Redis Cache, offering customizable configurations for creating and maintaining redis instances. It ensures a high-performance and scalable in-memory data store, optimized for low-latency and high-throughput applications in the cloud.
+
+## Features
+
+Configures access policies and assignments for secure access control.
+
+Adds firewall rules for enhanced network security.
+
+Supports linked servers for seamless replication and high availability.
+
+Utilization of terratest for robust validation.
+
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+The following requirements are needed by this module:
+
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.0)
+
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 5.0)
+
+## Providers
+
+The following providers are used by this module:
+
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 5.0)
+
+## Resources
+
+The following resources are used by this module:
+
+- [azurerm_redis_cache.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/redis_cache) (resource)
+- [azurerm_redis_cache_access_policy.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/redis_cache_access_policy) (resource)
+- [azurerm_redis_cache_access_policy_assignment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/redis_cache_access_policy_assignment) (resource)
+- [azurerm_redis_firewall_rule.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/redis_firewall_rule) (resource)
+- [azurerm_redis_linked_server.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/redis_linked_server) (resource)
+- [azurerm_client_config.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
+
+## Required Inputs
+
+The following input variables are required:
+
+### <a name="input_cache"></a> [cache](#input\_cache)
+
+Description: Contains all redis cache configuration
+
+Type:
+
+```hcl
+object({
+    name                               = string
+    location                           = optional(string)
+    resource_group_name                = optional(string)
+    capacity                           = number
+    family                             = string
+    sku_name                           = string
+    access_keys_authentication_enabled = optional(bool)
+    non_ssl_port_enabled               = optional(bool, false)
+    minimum_tls_version                = optional(string)
+    private_static_ip_address          = optional(string)
+    public_network_access_enabled      = optional(bool)
+    replicas_per_master                = optional(number)
+    replicas_per_primary               = optional(number)
+    redis_version                      = optional(string)
+    shard_count                        = optional(number)
+    subnet_id                          = optional(string)
+    zones                              = optional(list(string))
+    tenant_settings                    = optional(map(string))
+    tags                               = optional(map(string))
+    redis_configuration = optional(object({
+      aof_backup_enabled                      = optional(bool)
+      aof_storage_connection_string_0         = optional(string)
+      aof_storage_connection_string_1         = optional(string)
+      authentication_enabled                  = optional(bool)
+      active_directory_authentication_enabled = optional(bool)
+      maxmemory_reserved                      = optional(number)
+      maxmemory_delta                         = optional(number)
+      maxmemory_policy                        = optional(string)
+      data_persistence_authentication_method  = optional(string)
+      maxfragmentationmemory_reserved         = optional(number)
+      rdb_backup_enabled                      = optional(bool)
+      rdb_backup_frequency                    = optional(number)
+      rdb_backup_max_snapshot_count           = optional(number)
+      rdb_storage_connection_string           = optional(string)
+      storage_account_subscription_id         = optional(string)
+      notify_keyspace_events                  = optional(string)
+    }))
+    identity = optional(object({
+      type         = string
+      identity_ids = optional(list(string))
+    }))
+    patch_schedule = optional(map(object({
+      day_of_week        = string
+      start_hour_utc     = optional(number)
+      maintenance_window = optional(string)
+    })), {})
+    access_policy = optional(map(object({
+      name        = optional(string)
+      permissions = string
+    })), {})
+    access_policy_assignment = optional(map(object({
+      name               = optional(string)
+      access_policy_name = string
+      object_id          = optional(string)
+      object_id_alias    = string
+    })), {})
+    firewall_rules = optional(map(object({
+      name     = optional(string)
+      start_ip = string
+      end_ip   = string
+    })), {})
+    linked_server = optional(map(object({
+      target_redis_cache_name     = optional(string)
+      resource_group_name         = optional(string)
+      linked_redis_cache_id       = string
+      linked_redis_cache_location = string
+      server_role                 = string
+    })), {})
+  })
+```
+
+## Optional Inputs
+
+The following input variables are optional (have default values):
+
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: default azure region to be used.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
+
+Description: default resource group to be used.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_tags"></a> [tags](#input\_tags)
+
+Description: tags to be added to the resources
+
+Type: `map(string)`
+
+Default: `{}`
+
+## Outputs
+
+The following outputs are exported:
+
+### <a name="output_access_policy"></a> [access\_policy](#output\_access\_policy)
+
+Description: contains all redis cache access policy configuration
+
+### <a name="output_access_policy_assignment"></a> [access\_policy\_assignment](#output\_access\_policy\_assignment)
+
+Description: contains all redis cache access policy assignment configuration
+
+### <a name="output_cache"></a> [cache](#output\_cache)
+
+Description: contains all redis cache configuration
+
+### <a name="output_firewall_rules"></a> [firewall\_rules](#output\_firewall\_rules)
+
+Description: contains all redis cache firewall rule configuration
+
+### <a name="output_linked_server"></a> [linked\_server](#output\_linked\_server)
+
+Description: contains all redis cache linked server configuration
+<!-- END_TF_DOCS -->
+
+## Goals
+
+For more information, please see our [goals and non-goals](./GOALS.md).
+
+## Testing
+
+For more information, please see our testing [guidelines](./TESTING.md)
+
+## Notes
+
+Using a dedicated module, we've developed a naming convention for resources that's based on specific regular expressions for each type, ensuring correct abbreviations and offering flexibility with multiple prefixes and suffixes.
+
+Full examples detailing all usages, along with integrations with dependency modules, are located in the examples directory.
+
+To update the module's documentation run `make doc`
+
+## Contributors
+
+We welcome contributions from the community! Whether it's reporting a bug, suggesting a new feature, or submitting a pull request, your input is highly valued.
+
+For more information, please see our contribution [guidelines](./CONTRIBUTING.md).
+
+## License
+
+MIT Licensed. See [LICENSE](./LICENSE) for full details.
+
+## References
+
+- [Documentation](https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-overview)
+- [Rest Api](https://learn.microsoft.com/en-us/rest/api/redis)
